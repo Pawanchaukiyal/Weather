@@ -42,16 +42,14 @@ export default function Home() {
             <Wind />
             <AirPollution />
             <Sunset />
-
-            <FeelsLike />
-            <Humidity />
-            <Visibility />   
+            
            
             <UvIndex />
             <Population />
-            <DailyForecast />
-
-
+             <DailyForecast />
+            <FeelsLike />
+            <Humidity />
+            <Visibility />
             <Pressure />
           </div>
           <div className="mapbox-con mt-4 flex gap-4">
