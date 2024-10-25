@@ -14,11 +14,7 @@ function FlyToActiveCity({ activeCityCords }) {
         duration: 1.5,
       };
 
-      map.flyTo(
-        [activeCityCords.lat, activeCityCords.lon],
-        zoomLev,
-        flyToOptions
-      );
+      map.flyTo([activeCityCords.lat, activeCityCords.lon], zoomLev, flyToOptions);
     }
   }, [activeCityCords, map]);
 
@@ -26,14 +22,15 @@ function FlyToActiveCity({ activeCityCords }) {
 }
 
 function Mapbox() {
-  const { forecast } = useGlobalContext(); // Your coordinates
+  const { forecast } = useGlobalContext(); // Get forecast data from context
 
   const activeCityCords = forecast?.coord;
 
-  if (!forecast || !forecast.coord || !activeCityCords) {
+  // Check if forecast and coordinates are available
+  if (!forecast || !activeCityCords) {
     return (
-      <div>
-        <h1>Loading</h1>
+      <div className="flex items-center justify-center h-full">
+        <h1 className="text-lg">Loading...</h1>
       </div>
     );
   }
@@ -51,7 +48,6 @@ function Mapbox() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-
         <FlyToActiveCity activeCityCords={activeCityCords} />
       </MapContainer>
     </div>
