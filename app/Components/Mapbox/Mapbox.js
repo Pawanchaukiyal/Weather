@@ -1,57 +1,59 @@
-"use client";
-import React, { useEffect } from "react";
+"use client"; // This ensures the file is a client component
+
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useGlobalContext } from "@/app/context/globalContext";
 
 function FlyToActiveCity({ activeCityCords }) {
-  const map = useMap();
+    const map = useMap();
 
-  useEffect(() => {
-    if (activeCityCords) {
-      const zoomLev = 13;
-      const flyToOptions = {
-        duration: 1.5,
-      };
+    useEffect(() => {
+        if (activeCityCords) {
+            const zoomLev = 13;
+            const flyToOptions = {
+                duration: 1.5,
+            };
+            map.flyTo([activeCityCords.lat, activeCityCords.lon], zoomLev, flyToOptions);
+        }
+    }, [activeCityCords, map]);
 
-      map.flyTo([activeCityCords.lat, activeCityCords.lon], zoomLev, flyToOptions);
+    return null;
+}
+
+const Mapbox = () => {
+    const { forecast } = useGlobalContext();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted || !forecast) {
+        return <div>Loading...</div>;
     }
-  }, [activeCityCords, map]);
 
-  return null;
-}
+    const activeCityCords = forecast.coord;
 
-function Mapbox() {
-  const { forecast } = useGlobalContext(); // Get forecast data from context
+    if (!activeCityCords) {
+        return <div>No Coordinates Available</div>;
+    }
 
-  const activeCityCords = forecast?.coord;
-
-  // Check if forecast and coordinates are available
-  if (!forecast || !activeCityCords) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <h1 className="text-lg">Loading...</h1>
-      </div>
+        <MapContainer
+            center={[activeCityCords.lat, activeCityCords.lon]}
+            zoom={13}
+            scrollWheelZoom={false}
+            className="map"
+            style={{ height: "100%", width: "100%" }}
+        >
+            <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <FlyToActiveCity activeCityCords={activeCityCords} />
+        </MapContainer>
     );
-  }
-
-  return (
-    <div className="flex-1 basis-[50%] border rounded-lg">
-      <MapContainer
-        center={[activeCityCords.lat, activeCityCords.lon]}
-        zoom={13}
-        scrollWheelZoom={false}
-        className="rounded-lg m-4"
-        style={{ height: "calc(100% - 2rem)", width: "calc(100% - 2rem)" }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <FlyToActiveCity activeCityCords={activeCityCords} />
-      </MapContainer>
-    </div>
-  );
-}
+};
 
 export default Mapbox;
